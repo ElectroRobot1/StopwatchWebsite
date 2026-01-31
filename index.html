@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <div class="tabs-bar" aria-label="Books">
+      <div id="tabs" class="tabs" role="tablist" aria-label="Book tabs"></div>
+      <button id="new-tab" class="new-tab" type="button" aria-label="New book tab">+</button>
+    </div>
+
+    <div class="content">
+      <div class="container">
+        <h1 id="book-title">Stopwatch</h1>
+        <div id="display">0:00:00</div>
+        <button id="start">Start</button>
+        <button id="stop" disabled>Stop</button>
+        <button id="reset" disabled>Reset</button>
+        <button id="save" disabled>Save</button>
+        <div id="saved-times">
+          <h2>Saved Times</h2>
+          <button id="clear-all" disabled>Clear All</button>
+          <ul id="times-list"></ul>
+        </div>
+      </div>
+
+      <div class="control-box">
+        <button id="edit">Edit</button>
+        <button id="increment">+</button>
+        <button id="decrement">-</button>
+        <div id="time-input-box" class="hidden">
+          <div class="input-row">
+            <input type="number" id="hours-input" placeholder="0">
+            <label>Hours</label>
+          </div>
+          <div class="input-row">
+            <input type="number" id="minutes-input" placeholder="0">
+            <label>Minutes</label>
+          </div>
+          <div class="input-row">
+            <input type="number" id="seconds-input" placeholder="0">
+            <label>Seconds</label>
+          </div>
+          <button id="enter-time">Enter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="save-page-box" class="hidden">
+    <div class="save-page-content">
+      <h3>Save Page</h3>
+      <div class="page-suggest-row">
+        <button id="page-decrement">▼</button>
+        <input type="number" id="suggested-page-input" min="0">
+        <button id="page-increment">▲</button>
+      </div>
+      <div class="save-page-actions">
+        <button id="confirm-save-page">Save Page</button>
+        <button id="cancel-save-page">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="book-name-box" class="hidden">
+    <div class="book-name-content" role="dialog" aria-modal="true" aria-labelledby="book-name-title">
+      <h3 id="book-name-title">Name this book</h3>
+      <input id="book-name-input" type="text" maxlength="60" placeholder="Enter book name">
+      <div class="book-name-actions">
+        <button id="confirm-book-name" type="button" disabled>Create</button>
+        <button id="cancel-book-name" type="button">Close Tab</button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
