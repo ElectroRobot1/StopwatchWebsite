@@ -1,4 +1,5 @@
 const BOOKS_STORAGE_KEY = 'stopwatch_books_v1';
+const THEME_STORAGE_KEY = 'stopwatch_theme_preference_v1';
 const MAX_BOOKS = 12;
 
 let uiTickInterval = null;
@@ -23,12 +24,59 @@ const enterTimeButton = document.getElementById('enter-time');
 const hoursInput = document.getElementById('hours-input');
 const minutesInput = document.getElementById('minutes-input');
 const secondsInput = document.getElementById('seconds-input');
+const themeToggle = document.getElementById('theme-toggle');
+const systemThemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
 // Book name modal
 const bookNameBox = document.getElementById('book-name-box');
 const bookNameInput = document.getElementById('book-name-input');
 const confirmBookNameBtn = document.getElementById('confirm-book-name');
 const cancelBookNameBtn = document.getElementById('cancel-book-name');
+
+function getStoredThemePreference() {
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  if (stored === 'light' || stored === 'dark') return stored;
+  return null;
+}
+
+function getDeviceTheme() {
+  return systemThemeQuery && systemThemeQuery.matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  const resolved = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', resolved);
+  if (themeToggle) themeToggle.checked = resolved === 'dark';
+}
+
+function initTheme() {
+  const storedTheme = getStoredThemePreference();
+  applyTheme(storedTheme || getDeviceTheme());
+
+  if (themeToggle) {
+    themeToggle.addEventListener('change', () => {
+      const next = themeToggle.checked ? 'dark' : 'light';
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+      applyTheme(next);
+    });
+  }
+
+  if (!systemThemeQuery) return;
+
+  const handleSystemThemeChange = () => {
+    if (getStoredThemePreference()) return;
+    applyTheme(getDeviceTheme());
+  };
+
+  if (typeof systemThemeQuery.addEventListener === 'function') {
+    systemThemeQuery.addEventListener('change', handleSystemThemeChange);
+    return;
+  }
+
+  if (typeof systemThemeQuery.addListener === 'function') {
+    systemThemeQuery.addListener(handleSystemThemeChange);
+  }
+}
 
 function formatTime(time) {
   const seconds = Math.floor((time / 1000) % 60);
@@ -186,7 +234,7 @@ function updateSavedTimesList() {
 
     const timeText = document.createElement('span');
     const displayTime = entry.time || formatTime(entry.millis || 0);
-    const pageText = (entry.page !== null && entry.page !== undefined) ? ` — Page ${entry.page}` : '';
+    const pageText = (entry.page !== null && entry.page !== undefined) ? ` - Page ${entry.page}` : '';
     timeText.textContent = `${index + 1}. ${displayTime}${pageText}`;
     listItem.appendChild(timeText);
 
@@ -408,7 +456,7 @@ function renderTabs() {
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'tab-close';
-    close.textContent = '×';
+    close.textContent = 'x';
     close.setAttribute('aria-label', `Close ${book.name || 'book'}`);
     close.disabled = state.books.length <= 1;
     close.addEventListener('click', (e) => {
@@ -586,5 +634,6 @@ if (cancelBookNameBtn) {
 }
 
 // Init
+initTheme();
 state = loadState();
 render();

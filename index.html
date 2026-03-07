@@ -3,12 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
   <title>Stopwatch</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app">
     <div class="tabs-bar" aria-label="Books">
+      <div class="theme-toggle-wrap">
+        <span class="theme-label">Light</span>
+        <label class="theme-switch" for="theme-toggle">
+          <input id="theme-toggle" type="checkbox" aria-label="Toggle dark mode">
+          <span class="theme-slider"></span>
+        </label>
+        <span class="theme-label">Dark</span>
+      </div>
       <div id="tabs" class="tabs" role="tablist" aria-label="Book tabs"></div>
       <button id="new-tab" class="new-tab" type="button" aria-label="New book tab">+</button>
     </div>
@@ -54,9 +63,9 @@
     <div class="save-page-content">
       <h3>Save Page</h3>
       <div class="page-suggest-row">
-        <button id="page-decrement">▼</button>
+        <button id="page-decrement">&#9660;</button>
         <input type="number" id="suggested-page-input" min="0">
-        <button id="page-increment">▲</button>
+        <button id="page-increment">&#9650;</button>
       </div>
       <div class="save-page-actions">
         <button id="confirm-save-page">Save Page</button>
