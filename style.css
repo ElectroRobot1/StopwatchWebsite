@@ -18,6 +18,14 @@
   --switch-track: #ced5de;
   --switch-track-active: #34c759;
   --switch-knob: #ffffff;
+  --danger: #d92d20;
+  --danger-hover: #b42318;
+  --cancel: #64748b;
+  --cancel-hover: #475569;
+  --restore: #0f9f6e;
+  --restore-hover: #0b7f57;
+  --action-button-width: 120px;
+  --edit-button-width: 78px;
 }
 
 :root[data-theme='dark'] {
@@ -40,6 +48,12 @@
   --switch-track: #363d47;
   --switch-track-active: #34c759;
   --switch-knob: #ffffff;
+  --danger: #f87171;
+  --danger-hover: #ef4444;
+  --cancel: #697586;
+  --cancel-hover: #52606f;
+  --restore: #2fb980;
+  --restore-hover: #239265;
 }
 
 * {
@@ -111,7 +125,8 @@ span {
 
 .primary-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, var(--action-button-width));
+  justify-content: center;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -348,6 +363,13 @@ input[type='number'] {
   margin-top: 10px;
 }
 
+.saved-times-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 #times-list {
   list-style: none;
   margin: 10px 0 0 0;
@@ -358,7 +380,7 @@ input[type='number'] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   padding: 8px 10px;
   margin: 6px 0;
   background: var(--surface-2);
@@ -366,8 +388,83 @@ input[type='number'] {
   border-radius: 8px;
 }
 
-.delete-button {
+.saved-time-label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.saved-time-actions,
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirm-actions {
+  justify-content: center;
+}
+
+.confirm-actions.hidden {
+  display: none;
+}
+
+.restore-button,
+.delete-button,
+.danger-button,
+.cancel-button {
   padding: 6px 10px;
+  min-width: 96px;
+}
+
+.restore-button {
+  background: var(--restore);
+}
+
+.restore-button:hover:not(:disabled) {
+  background: var(--restore-hover);
+}
+
+.danger-button,
+.delete-button {
+  background: var(--danger);
+}
+
+.danger-button:hover:not(:disabled),
+.delete-button:hover:not(:disabled) {
+  background: var(--danger-hover);
+}
+
+.cancel-button {
+  background: var(--cancel);
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: var(--cancel-hover);
+}
+
+.confirm-label {
+  flex-basis: 100%;
+  font-size: 0.82rem;
+  color: var(--danger);
+  text-align: center;
+}
+
+@media (min-width: 861px) {
+  .control-box {
+    max-width: 286px;
+    margin-top: 18px;
+    padding: 18px 16px;
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border-radius: 24px;
+    box-shadow: 0 16px 30px var(--shadow);
+  }
+
+  .edit-actions {
+    grid-template-columns: repeat(3, var(--edit-button-width));
+    justify-content: center;
+  }
 }
 
 #save-page-box {
@@ -484,6 +581,10 @@ input[type='number'] {
 
   #display {
     font-size: 3.3rem;
+  }
+
+  .primary-actions {
+    grid-template-columns: repeat(2, minmax(0, var(--action-button-width)));
   }
 
   .tabs-bar {

@@ -34,7 +34,10 @@
         </div>
         <div id="saved-times">
           <h2>Saved Times</h2>
-          <button id="clear-all" disabled>Clear All</button>
+          <div class="saved-times-toolbar">
+            <button id="clear-all" disabled>Clear All</button>
+            <div id="clear-all-confirm" class="confirm-actions hidden" aria-live="polite"></div>
+          </div>
           <ul id="times-list"></ul>
         </div>
       </div>

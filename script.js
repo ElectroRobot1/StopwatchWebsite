@@ -5,6 +5,8 @@ const MAX_BOOKS = 12;
 let uiTickInterval = null;
 let state = null;
 let pendingBookNameAction = null; // { mode: 'create', id } | { mode: 'rename', bookId }
+let pendingDeleteIndex = null;
+let clearAllPending = false;
 
 const display = document.getElementById('display');
 const bookTitle = document.getElementById('book-title');
@@ -15,6 +17,7 @@ const stopButton = document.getElementById('stop');
 const resetButton = document.getElementById('reset');
 const saveButton = document.getElementById('save');
 const clearAllButton = document.getElementById('clear-all');
+const clearAllConfirm = document.getElementById('clear-all-confirm');
 const timesList = document.getElementById('times-list');
 const editButton = document.getElementById('edit');
 const incrementButton = document.getElementById('increment');
@@ -120,6 +123,16 @@ function formatTime(time) {
   const minutes = Math.floor((time / (1000 * 60)) % 60);
   const hours = Math.floor(time / (1000 * 60 * 60));
   return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function parseFormattedTime(timeText) {
+  const match = /^(\d+):(\d{2}):(\d{2})$/.exec((timeText || '').trim());
+  if (!match) return 0;
+
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const seconds = parseInt(match[3], 10);
+  return (hours * 3600 + minutes * 60 + seconds) * 1000;
 }
 
 function newId() {
@@ -246,18 +259,94 @@ function saveTime() {
   showSavePageBox();
 }
 
-function clearAllSavedTimes() {
+function confirmClearAllSavedTimes() {
   const book = getActiveBook();
   book.savedTimes = [];
+  pendingDeleteIndex = null;
+  clearAllPending = false;
   saveState();
   render();
 }
 
-function deleteSavedTime(index) {
+function confirmDeleteSavedTime(index) {
   const book = getActiveBook();
   book.savedTimes.splice(index, 1);
+  pendingDeleteIndex = null;
   saveState();
   render();
+}
+
+function restoreSavedTime(index) {
+  const book = getActiveBook();
+  const entry = book.savedTimes[index];
+  if (!entry) return;
+
+  const restoredMillis = entry.millis ?? parseFormattedTime(entry.time);
+  setElapsedMs(book, restoredMillis);
+  pendingDeleteIndex = null;
+  clearAllPending = false;
+  saveState();
+  render();
+}
+
+function requestDeleteSavedTime(index) {
+  clearAllPending = false;
+  pendingDeleteIndex = pendingDeleteIndex === index ? null : index;
+  render();
+}
+
+function cancelDeleteSavedTime() {
+  pendingDeleteIndex = null;
+  render();
+}
+
+function requestClearAllSavedTimes() {
+  pendingDeleteIndex = null;
+  clearAllPending = true;
+  render();
+}
+
+function cancelClearAllSavedTimes() {
+  clearAllPending = false;
+  render();
+}
+
+function createActionButton(text, className, onClick) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = text;
+  button.className = className;
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+function updateClearAllConfirmation(savedTimes) {
+  if (!clearAllButton || !clearAllConfirm) return;
+
+  if (!savedTimes.length) {
+    clearAllPending = false;
+  }
+
+  clearAllButton.disabled = savedTimes.length === 0;
+  clearAllConfirm.innerHTML = '';
+
+  if (!clearAllPending || clearAllButton.disabled) {
+    clearAllConfirm.classList.add('hidden');
+    return;
+  }
+
+  const label = document.createElement('span');
+  label.className = 'confirm-label';
+  label.textContent = 'Delete every saved time forever?';
+
+  clearAllConfirm.appendChild(label);
+  clearAllConfirm.appendChild(
+    createActionButton('Delete Again', 'delete-button danger-button', confirmClearAllSavedTimes)
+  );
+  clearAllConfirm.appendChild(
+    createActionButton('Cancel', 'cancel-button', cancelClearAllSavedTimes)
+  );
+  clearAllConfirm.classList.remove('hidden');
 }
 
 function updateSavedTimesList() {
@@ -265,26 +354,50 @@ function updateSavedTimesList() {
   const book = getActiveBook();
   const savedTimes = book.savedTimes || [];
 
+  if (pendingDeleteIndex !== null && (pendingDeleteIndex < 0 || pendingDeleteIndex >= savedTimes.length)) {
+    pendingDeleteIndex = null;
+  }
+
   savedTimes.forEach((entry, index) => {
     const listItem = document.createElement('li');
     listItem.className = 'saved-time-item';
 
     const timeText = document.createElement('span');
+    timeText.className = 'saved-time-label';
     const displayTime = entry.time || formatTime(entry.millis || 0);
     const pageText = (entry.page !== null && entry.page !== undefined) ? ` - Page ${entry.page}` : '';
     timeText.textContent = `${index + 1}. ${displayTime}${pageText}`;
     listItem.appendChild(timeText);
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.className = 'delete-button';
-    deleteButton.addEventListener('click', () => deleteSavedTime(index));
-    listItem.appendChild(deleteButton);
+    const actions = document.createElement('div');
+    actions.className = 'saved-time-actions';
+
+    if (pendingDeleteIndex === index) {
+      const label = document.createElement('span');
+      label.className = 'confirm-label';
+      label.textContent = 'Delete this saved time forever?';
+      actions.appendChild(label);
+      actions.appendChild(
+        createActionButton('Delete Again', 'delete-button danger-button', () => confirmDeleteSavedTime(index))
+      );
+      actions.appendChild(
+        createActionButton('Cancel', 'cancel-button', cancelDeleteSavedTime)
+      );
+    } else {
+      actions.appendChild(
+        createActionButton('Restore', 'restore-button', () => restoreSavedTime(index))
+      );
+      actions.appendChild(
+        createActionButton('Delete', 'delete-button', () => requestDeleteSavedTime(index))
+      );
+    }
+
+    listItem.appendChild(actions);
 
     timesList.appendChild(listItem);
   });
 
-  clearAllButton.disabled = savedTimes.length === 0;
+  updateClearAllConfirmation(savedTimes);
 }
 
 editButton.addEventListener('click', () => toggleTimeInputBox(editButton));
@@ -304,7 +417,7 @@ startButton.addEventListener('click', startStopwatch);
 stopButton.addEventListener('click', stopStopwatch);
 resetButton.addEventListener('click', resetStopwatch);
 saveButton.addEventListener('click', saveTime);
-clearAllButton.addEventListener('click', clearAllSavedTimes);
+clearAllButton.addEventListener('click', requestClearAllSavedTimes);
 
 // Save page popup elements (may be absent in older pages)
 const savePageBox = document.getElementById('save-page-box');
@@ -449,6 +562,8 @@ function resetStopwatch() {
 
 function setActiveBook(bookId) {
   state.activeBookId = bookId;
+  pendingDeleteIndex = null;
+  clearAllPending = false;
   saveState();
   // Hide any open time-input UI when switching books
   document.querySelectorAll('.control-box button').forEach(btn => btn.classList.remove('active'));
