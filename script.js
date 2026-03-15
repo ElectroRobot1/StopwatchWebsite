@@ -26,6 +26,10 @@ const minutesInput = document.getElementById('minutes-input');
 const secondsInput = document.getElementById('seconds-input');
 const themeToggle = document.getElementById('theme-toggle');
 const systemThemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+const mobileLayoutQuery = window.matchMedia ? window.matchMedia('(max-width: 860px)') : null;
+const contentRoot = document.querySelector('.content');
+const containerRoot = document.querySelector('.container');
+const controlBox = document.querySelector('.control-box');
 
 // Book name modal
 const bookNameBox = document.getElementById('book-name-box');
@@ -75,6 +79,39 @@ function initTheme() {
 
   if (typeof systemThemeQuery.addListener === 'function') {
     systemThemeQuery.addListener(handleSystemThemeChange);
+  }
+}
+
+function syncControlBoxLayout() {
+  if (!mobileLayoutQuery || !contentRoot || !containerRoot || !controlBox || !timesList) return;
+
+  const savedTimesSection = document.getElementById('saved-times');
+  if (!savedTimesSection) return;
+
+  if (mobileLayoutQuery.matches) {
+    if (controlBox.parentElement !== containerRoot) {
+      containerRoot.insertBefore(controlBox, savedTimesSection);
+    }
+    return;
+  }
+
+  if (controlBox.parentElement !== contentRoot) {
+    contentRoot.appendChild(controlBox);
+  }
+}
+
+function initResponsiveLayout() {
+  syncControlBoxLayout();
+
+  if (!mobileLayoutQuery) return;
+
+  if (typeof mobileLayoutQuery.addEventListener === 'function') {
+    mobileLayoutQuery.addEventListener('change', syncControlBoxLayout);
+    return;
+  }
+
+  if (typeof mobileLayoutQuery.addListener === 'function') {
+    mobileLayoutQuery.addListener(syncControlBoxLayout);
   }
 }
 
@@ -635,5 +672,6 @@ if (cancelBookNameBtn) {
 
 // Init
 initTheme();
+initResponsiveLayout();
 state = loadState();
 render();

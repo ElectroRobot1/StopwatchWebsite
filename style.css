@@ -70,9 +70,10 @@ body {
   gap: 20px;
 }
 
-.container {
+.container,
+.control-box {
   width: 100%;
-  max-width: 860px;
+  max-width: 400px;
   padding: 20px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -85,16 +86,6 @@ body {
   text-align: center;
 }
 
-.stopwatch-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  grid-template-areas:
-    'display control'
-    'actions control';
-  align-items: start;
-  gap: 16px 20px;
-}
-
 h1,
 h2,
 h3,
@@ -104,18 +95,12 @@ span {
 }
 
 #display {
-  grid-area: display;
   font-size: 4rem;
-  margin: 20px 0 8px 0;
+  margin: 20px 0;
 }
 
 .control-box {
-  grid-area: control;
-  padding: 16px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  text-align: center;
 }
 
 .edit-actions {
@@ -125,10 +110,10 @@ span {
 }
 
 .primary-actions {
-  grid-area: actions;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .primary-actions button,
@@ -492,20 +477,13 @@ input[type='number'] {
     align-items: stretch;
   }
 
+  .container,
+  .control-box {
+    max-width: none;
+  }
+
   #display {
     font-size: 3.3rem;
-  }
-
-  .stopwatch-main {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'display'
-      'control'
-      'actions';
-  }
-
-  .control-box {
-    width: 100%;
   }
 
   .tabs-bar {
