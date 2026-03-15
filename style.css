@@ -24,8 +24,7 @@
   --cancel-hover: #475569;
   --restore: #0f9f6e;
   --restore-hover: #0b7f57;
-  --action-button-width: 120px;
-  --edit-button-width: 78px;
+  --action-button-width: 96px;
 }
 
 :root[data-theme='dark'] {
@@ -378,7 +377,8 @@ input[type='number'] {
 
 .saved-time-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   padding: 8px 10px;
@@ -404,10 +404,18 @@ input[type='number'] {
 
 .confirm-actions {
   justify-content: center;
+  width: 100%;
 }
 
 .confirm-actions.hidden {
   display: none;
+}
+
+.confirm-panel {
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  background: var(--surface-2);
 }
 
 .restore-button,
@@ -461,10 +469,6 @@ input[type='number'] {
     box-shadow: 0 16px 30px var(--shadow);
   }
 
-  .edit-actions {
-    grid-template-columns: repeat(3, var(--edit-button-width));
-    justify-content: center;
-  }
 }
 
 #save-page-box {

@@ -329,9 +329,9 @@ function updateClearAllConfirmation(savedTimes) {
 
   clearAllButton.disabled = savedTimes.length === 0;
   clearAllConfirm.innerHTML = '';
+  clearAllConfirm.className = 'confirm-actions hidden';
 
   if (!clearAllPending || clearAllButton.disabled) {
-    clearAllConfirm.classList.add('hidden');
     return;
   }
 
@@ -346,7 +346,7 @@ function updateClearAllConfirmation(savedTimes) {
   clearAllConfirm.appendChild(
     createActionButton('Cancel', 'cancel-button', cancelClearAllSavedTimes)
   );
-  clearAllConfirm.classList.remove('hidden');
+  clearAllConfirm.className = 'confirm-actions confirm-panel';
 }
 
 function updateSavedTimesList() {
@@ -371,28 +371,32 @@ function updateSavedTimesList() {
 
     const actions = document.createElement('div');
     actions.className = 'saved-time-actions';
+    actions.appendChild(
+      createActionButton('Restore', 'restore-button', () => restoreSavedTime(index))
+    );
+    actions.appendChild(
+      createActionButton('Delete', 'delete-button', () => requestDeleteSavedTime(index))
+    );
+
+    listItem.appendChild(actions);
 
     if (pendingDeleteIndex === index) {
+      const warning = document.createElement('div');
+      warning.className = 'confirm-actions confirm-panel';
+
       const label = document.createElement('span');
       label.className = 'confirm-label';
       label.textContent = 'Delete this saved time forever?';
-      actions.appendChild(label);
-      actions.appendChild(
+      warning.appendChild(label);
+      warning.appendChild(
         createActionButton('Delete Again', 'delete-button danger-button', () => confirmDeleteSavedTime(index))
       );
-      actions.appendChild(
+      warning.appendChild(
         createActionButton('Cancel', 'cancel-button', cancelDeleteSavedTime)
       );
-    } else {
-      actions.appendChild(
-        createActionButton('Restore', 'restore-button', () => restoreSavedTime(index))
-      );
-      actions.appendChild(
-        createActionButton('Delete', 'delete-button', () => requestDeleteSavedTime(index))
-      );
-    }
 
-    listItem.appendChild(actions);
+      listItem.appendChild(warning);
+    }
 
     timesList.appendChild(listItem);
   });
