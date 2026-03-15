@@ -25,36 +25,41 @@
     <div class="content">
       <div class="container">
         <h1 id="book-title">Stopwatch</h1>
-        <div id="display">0:00:00</div>
-        <button id="start">Start</button>
-        <button id="stop" disabled>Stop</button>
-        <button id="reset" disabled>Reset</button>
-        <button id="save" disabled>Save</button>
+        <div class="stopwatch-main">
+          <div id="display">0:00:00</div>
+          <div class="control-box">
+            <div class="edit-actions">
+              <button id="edit">Edit</button>
+              <button id="increment">+</button>
+              <button id="decrement">-</button>
+            </div>
+            <div id="time-input-box" class="hidden">
+              <div class="input-row">
+                <input type="number" id="hours-input" placeholder="0">
+                <label>Hours</label>
+              </div>
+              <div class="input-row">
+                <input type="number" id="minutes-input" placeholder="0">
+                <label>Minutes</label>
+              </div>
+              <div class="input-row">
+                <input type="number" id="seconds-input" placeholder="0">
+                <label>Seconds</label>
+              </div>
+              <button id="enter-time">Enter</button>
+            </div>
+          </div>
+          <div class="primary-actions">
+            <button id="start">Start</button>
+            <button id="stop" disabled>Stop</button>
+            <button id="reset" disabled>Reset</button>
+            <button id="save" disabled>Save</button>
+          </div>
+        </div>
         <div id="saved-times">
           <h2>Saved Times</h2>
           <button id="clear-all" disabled>Clear All</button>
           <ul id="times-list"></ul>
-        </div>
-      </div>
-
-      <div class="control-box">
-        <button id="edit">Edit</button>
-        <button id="increment">+</button>
-        <button id="decrement">-</button>
-        <div id="time-input-box" class="hidden">
-          <div class="input-row">
-            <input type="number" id="hours-input" placeholder="0">
-            <label>Hours</label>
-          </div>
-          <div class="input-row">
-            <input type="number" id="minutes-input" placeholder="0">
-            <label>Minutes</label>
-          </div>
-          <div class="input-row">
-            <input type="number" id="seconds-input" placeholder="0">
-            <label>Seconds</label>
-          </div>
-          <button id="enter-time">Enter</button>
         </div>
       </div>
     </div>
