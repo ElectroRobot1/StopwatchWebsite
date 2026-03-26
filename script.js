@@ -506,6 +506,20 @@ function hideSavePageBox() {
   try { document.body.style.overflow = ''; } catch(e) {}
 }
 
+function saveCurrentTimeEntry(pageValue) {
+  const book = getActiveBook();
+  const elapsedTime = getElapsedMs(book);
+  const entry = {
+    time: formatTime(elapsedTime),
+    millis: elapsedTime,
+    page: pageValue,
+  };
+  book.savedTimes.push(entry);
+  saveState();
+  render();
+  hideSavePageBox();
+}
+
 if (pageIncrement) {
   pageIncrement.addEventListener('click', () => {
     suggestedPageInput.value = (parseInt(suggestedPageInput.value) || 0) + 1;
@@ -519,20 +533,20 @@ if (pageDecrement) {
 
 if (confirmSavePageBtn) {
   confirmSavePageBtn.addEventListener('click', () => {
-    const book = getActiveBook();
-    const elapsedTime = getElapsedMs(book);
-    const pageNum = Math.max(0, parseInt(suggestedPageInput.value) || 0);
-    const entry = { time: formatTime(elapsedTime), millis: elapsedTime, page: pageNum };
-    book.savedTimes.push(entry);
-    saveState();
-    render();
-    hideSavePageBox();
+    const rawValue = (suggestedPageInput.value || '').trim();
+    if (!rawValue) {
+      saveCurrentTimeEntry(null);
+      return;
+    }
+
+    const pageNum = Math.max(0, parseInt(rawValue, 10) || 0);
+    saveCurrentTimeEntry(pageNum);
   });
 }
 
 if (cancelSavePageBtn) {
   cancelSavePageBtn.addEventListener('click', () => {
-    hideSavePageBox();
+    saveCurrentTimeEntry(null);
   });
 }
 
